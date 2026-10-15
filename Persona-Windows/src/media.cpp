@@ -226,20 +226,20 @@ QImage MediaCtl::art() const
 
 void MediaCtl::applyState(const MediaState &state)
 {
-    bool changed = false;
+    bool didChange = false;
     {
         QMutexLocker lock(&m_artMutex);
         if (state.art != m_art) {
             m_art = state.art;
             ++m_artSerial;
-            changed = true;
+            didChange = true;
         }
     }
     if (state.available != m_state.available || state.title != m_state.title
         || state.artist != m_state.artist || state.playing != m_state.playing
         || state.canPrevious != m_state.canPrevious || state.canNext != m_state.canNext
         || state.canToggle != m_state.canToggle)
-        changed = true;
+        didChange = true;
 
     m_state.available = state.available;
     m_state.title = state.title;
@@ -249,7 +249,7 @@ void MediaCtl::applyState(const MediaState &state)
     m_state.canNext = state.canNext;
     m_state.canToggle = state.canToggle;
 
-    if (changed)
+    if (didChange)
         emit changed();
 }
 
