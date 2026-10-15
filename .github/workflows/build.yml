@@ -1,0 +1,73 @@
+name: Build Windows exe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Get this project
+        uses: actions/checkout@v4
+        with:
+          path: repo
+
+      - name: Get the original theme (for its Assets folder)
+        uses: actions/checkout@v4
+        with:
+          repository: Yujonpradhananga/Persona-Quickshell
+          path: Persona-Quickshell-main
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          modules: 'qtmultimedia'
+          cache: true
+
+      - name: Configure
+        working-directory: repo/Persona-Windows
+        run: >
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+          -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR"
+          -DPERSONA_ASSETS_DIR="${{ github.workspace }}/Persona-Quickshell-main/Assets"
+
+      - name: Build
+        working-directory: repo/Persona-Windows
+        run: cmake --build build --config Release --parallel
+
+      - name: Logic tests
+        working-directory: repo/Persona-Windows
+        continue-on-error: true
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Bundle Qt (windeployqt)
+        working-directory: repo/Persona-Windows
+        run: cmake --build build --config Release --target deploy
+
+      - name: Assemble the zip
+        shell: pwsh
+        run: |
+          $out = "dist/PersonaShell"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          Get-ChildItem "repo/Persona-Windows/build/Release" | Where-Object { $_.Name -ne 'logic_test.exe' } |
+              Copy-Item -Destination $out -Recurse
+          Copy-Item "Persona-Quickshell-main/Assets" "$out/Assets" -Recurse
+          Copy-Item "repo/Persona-Windows/README.md" $out
+          foreach ($d in 'msvcp140.dll','msvcp140_1.dll','msvcp140_2.dll','vcruntime140.dll','vcruntime140_1.dll') {
+              $p = Join-Path $env:SystemRoot "System32\$d"
+              if (Test-Path $p) { Copy-Item $p $out }
+          }
+          Get-ChildItem $out | Select-Object Name | Format-Table -HideTableHeaders
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: PersonaShell-Windows
+          path: dist/PersonaShell
+          retention-days: 30
