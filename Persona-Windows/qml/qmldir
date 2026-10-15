@@ -1,0 +1,26 @@
+AppDrawer 1.0 AppDrawer.qml
+BatteryIcon 1.0 BatteryIcon.qml
+BrightnessOsd 1.0 BrightnessOsd.qml
+Calendar 1.0 Calendar.qml
+Capsule 1.0 Capsule.qml
+CavaVisualizer 1.0 CavaVisualizer.qml
+Clock 1.0 Clock.qml
+singleton Colors 1.0 Colors.qml
+singleton Fonts 1.0 Fonts.qml
+Icon 1.0 Icon.qml
+Marquee 1.0 Marquee.qml
+Options 1.0 Options.qml
+OptionsList 1.0 OptionsList.qml
+Osd 1.0 Osd.qml
+P3rTransition 1.0 P3rTransition.qml
+P3rTransition2 1.0 P3rTransition2.qml
+P3rTransition3 1.0 P3rTransition3.qml
+P3rpause 1.0 P3rpause.qml
+PanelWindow 1.0 PanelWindow.qml
+Resume 1.0 Resume.qml
+Scope 1.0 Scope.qml
+Searchapp 1.0 Searchapp.qml
+SilentVideo 1.0 SilentVideo.qml
+singleton Time 1.0 Time.qml
+VolumeOsd 1.0 VolumeOsd.qml
+WallpaperEngine 1.0 WallpaperEngine.qml
